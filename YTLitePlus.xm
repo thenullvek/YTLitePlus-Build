@@ -436,20 +436,20 @@ BOOL isTabSelected = NO;
 %group gFullscreenToTheRight
 %hook YTWatchViewController
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    if ([self isFullscreen] && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([self isFullscreen] && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         return UIInterfaceOrientationLandscapeRight;
     }
     return %orig;
 }
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    if ([self isFullscreen] && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([self isFullscreen] && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         return UIInterfaceOrientationMaskLandscape;
     }
     return %orig;
 }
 %new
 - (void)forceRightFullscreenOrientation {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         NSNumber *value = [NSNumber numberWithInt:UIInterfaceOrientationLandscapeRight];
         [[UIDevice currentDevice] setValue:value forKey:@"orientation"];
     }
@@ -654,9 +654,9 @@ BOOL isTabSelected = NO;
 
 %group giPhoneLayout // https://github.com/LillieH001/YouTube-Reborn
 %hook UIDevice
-- (long long)userInterfaceIdiom {
-    return NO;
-} 
+- (UIUserInterfaceIdiom)userInterfaceIdiom {
+    return UIUserInterfaceIdiomPhone;
+}
 %end
 %hook UIStatusBarStyleAttributes
 - (long long)idiom {
@@ -665,12 +665,20 @@ BOOL isTabSelected = NO;
 %end
 %hook UIKBTree
 - (long long)nativeIdiom {
-    return NO;
+    if ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait) {
+        return NO;
+    } else {
+        return YES;
+    }
 } 
 %end
 %hook UIKBRenderer
 - (long long)assetIdiom {
-    return NO;
+    if ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait) {
+        return NO;
+    } else {
+        return YES;
+    }
 } 
 %end
 %end
